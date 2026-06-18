@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Login – TurfTown{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-left-content">
+      <div class="auth-logo-big">
+        <div class="logo-box big">
+          <span class="logo-text">TURF<br>TOWN</span>
+        </div>
+      </div>
+      <h2 class="auth-tagline">Coimbatore's Biggest<br>Turf Booking Platform</h2>
+      <ul class="auth-features">
+        <li><i class="fas fa-check-circle"></i> 50+ Verified Venues</li>
+        <li><i class="fas fa-check-circle"></i> Football, Cricket & Badminton</li>
+        <li><i class="fas fa-check-circle"></i> Instant Slot Booking</li>
+        <li><i class="fas fa-check-circle"></i> Available 6AM – 11PM</li>
+      </ul>
+    </div>
+  </div>
+  <div class="auth-right">
+    <div class="auth-form-card">
+      <h1 class="auth-form-title">Welcome Back</h1>
+      <p class="auth-form-sub">Login to book your favourite turf</p>
+
+      <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form">
+        <div class="form-group">
+          <label class="form-label"><i class="fas fa-envelope"></i> Email Address</label>
+          <input type="email" name="email" class="form-input" placeholder="your@email.com" required autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label"><i class="fas fa-lock"></i> Password</label>
+          <div class="password-wrap">
+            <input type="password" name="password" class="form-input" placeholder="Enter password" required id="loginPassword"/>
+            <button type="button" class="toggle-password" onclick="togglePass('loginPassword', this)">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="auth-submit-btn">
+          <i class="fas fa-sign-in-alt"></i> Login to TurfTown
+        </button>
+      </form>
+
+      <div class="auth-demo-section">
+        <p class="demo-label">Demo Credentials</p>
+        <div class="demo-creds">
+          <span><i class="fas fa-user-shield"></i> Admin: admin@turftown.in / admin123</span>
+        </div>
+      </div>
+
+      <div class="auth-switch">
+        <p>Don't have an account?
+          <a href="{{ url_for('auth.register') }}" class="auth-switch-link">Create Account</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePass(id, btn) {
+  const input = document.getElementById(id);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+  } else {
+    input.type = 'password';
+    btn.innerHTML = '<i class="fas fa-eye"></i>';
+  }
+}
+</script>
+{% endblock %}

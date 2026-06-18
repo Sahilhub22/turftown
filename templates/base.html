@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>{% block title %}TurfTown – Book Sports Venues in Coimbatore{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}TurfTown – Coimbatore's biggest turf booking platform. Book football, cricket and badminton venues instantly.{% endblock %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+  <div class="nav-container">
+    <!-- Logo -->
+    <a href="{{ url_for('main.home') }}" class="nav-logo">
+      <div class="logo-box">
+        <span class="logo-text">TURF<br>TOWN</span>
+      </div>
+    </a>
+
+    <!-- Nav Links -->
+    <ul class="nav-links" id="navLinks">
+      <li><a href="{{ url_for('main.venues', sport='football') }}" class="nav-link {% if request.args.get('sport')=='football' %}active{% endif %}">
+        <i class="fas fa-futbol"></i> Football</a></li>
+      <li><a href="{{ url_for('main.venues', sport='cricket') }}" class="nav-link {% if request.args.get('sport')=='cricket' %}active{% endif %}">
+        <i class="fas fa-baseball-ball"></i> Cricket</a></li>
+      <li><a href="{{ url_for('main.venues', sport='badminton') }}" class="nav-link {% if request.args.get('sport')=='badminton' %}active{% endif %}">
+        <i class="fas fa-table-tennis-paddle-ball"></i> Badminton</a></li>
+      <li><a href="{{ url_for('main.venues') }}" class="nav-link">
+        <i class="fas fa-map-marker-alt"></i> Venues</a></li>
+    </ul>
+
+    <!-- Right Side -->
+    <div class="nav-right">
+      {% if current_user.is_authenticated %}
+        <div class="nav-user-menu">
+          <button class="nav-user-btn" id="userMenuBtn">
+            <div class="user-avatar">{{ current_user.name[0].upper() }}</div>
+            <span>{{ current_user.name.split()[0] }}</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <a href="{{ url_for('booking.my_bookings') }}"><i class="fas fa-calendar-check"></i> My Bookings</a>
+            {% if current_user.is_admin %}
+              <a href="{{ url_for('admin_bp.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Admin Panel</a>
+            {% endif %}
+            <hr class="dropdown-divider"/>
+            <a href="{{ url_for('auth.logout') }}" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </div>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn-nav-login">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn-nav-download">
+          Sign Up <i class="fas fa-arrow-right"></i>
+        </a>
+      {% endif %}
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">
+          <i class="fas {% if category=='success' %}fa-check-circle{% elif category=='danger' %}fa-exclamation-circle{% elif category=='warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+          {{ message }}
+          <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Page Content -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="logo-box small">
+            <span class="logo-text">TURF<br>TOWN</span>
+          </div>
+        </div>
+        <p>Coimbatore's biggest turf booking platform. Find and book top sports venues near you instantly.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-links-col">
+        <h4>Sports</h4>
+        <ul>
+          <li><a href="{{ url_for('main.venues', sport='football') }}">Football Turfs</a></li>
+          <li><a href="{{ url_for('main.venues', sport='cricket') }}">Cricket Grounds</a></li>
+          <li><a href="{{ url_for('main.venues', sport='badminton') }}">Badminton Courts</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Refund Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 TurfTown. All rights reserved. Made with ❤️ in Coimbatore.</p>
+      <div class="footer-badges">
+        <span class="footer-badge"><i class="fas fa-map-marker-alt"></i> Coimbatore, Tamil Nadu</span>
+        <span class="footer-badge"><i class="fas fa-headset"></i> 24/7 Support</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

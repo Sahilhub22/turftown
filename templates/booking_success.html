@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Booking Confirmed! – TurfTown{% endblock %}
+
+{% block content %}
+<div class="success-page">
+  <div class="success-container">
+    <div class="success-animation">
+      <div class="success-circle">
+        <i class="fas fa-check success-check-icon"></i>
+      </div>
+      <div class="success-ripple r1"></div>
+      <div class="success-ripple r2"></div>
+    </div>
+    <h1 class="success-title">Booking Confirmed! 🎉</h1>
+    <p class="success-sub">Your turf slot has been successfully booked.</p>
+
+    <div class="success-booking-card">
+      <div class="booking-ref-banner">
+        <span class="ref-label">Booking Reference</span>
+        <span class="ref-code">{{ booking.booking_ref }}</span>
+      </div>
+      <div class="success-details-grid">
+        <div class="success-detail">
+          <i class="fas fa-map-marker-alt"></i>
+          <div>
+            <label>Venue</label>
+            <span>{{ turf.name }}</span>
+          </div>
+        </div>
+        <div class="success-detail">
+          <i class="fas fa-map-pin"></i>
+          <div>
+            <label>Location</label>
+            <span>{{ turf.location }}</span>
+          </div>
+        </div>
+        <div class="success-detail">
+          <i class="fas fa-calendar-alt"></i>
+          <div>
+            <label>Date</label>
+            <span>{{ slot.date }}</span>
+          </div>
+        </div>
+        <div class="success-detail">
+          <i class="fas fa-clock"></i>
+          <div>
+            <label>Time Slot</label>
+            <span>{{ slot.start_time }} – {{ slot.end_time }}</span>
+          </div>
+        </div>
+        <div class="success-detail">
+          <i class="fas fa-tag"></i>
+          <div>
+            <label>Sport</label>
+            <span>{{ turf.sport_type|capitalize }}</span>
+          </div>
+        </div>
+        <div class="success-detail">
+          <i class="fas fa-rupee-sign"></i>
+          <div>
+            <label>Amount</label>
+            <span>₹{{ booking.total_price|int }}</span>
+          </div>
+        </div>
+        <div class="success-detail">
+          <i class="fas fa-credit-card"></i>
+          <div>
+            <label>Payment</label>
+            <span>{{ booking.payment_method }}</span>
+          </div>
+        </div>
+        <div class="success-detail">
+          <i class="fas fa-check-circle"></i>
+          <div>
+            <label>Status</label>
+            <span class="status-confirmed">✓ Confirmed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="success-actions">
+      <a href="{{ url_for('booking.my_bookings') }}" class="btn-primary">
+        <i class="fas fa-calendar-check"></i> My Bookings
+      </a>
+      <a href="{{ url_for('main.home') }}" class="btn-outline">
+        <i class="fas fa-home"></i> Back to Home
+      </a>
+    </div>
+
+    <div class="success-tip">
+      <i class="fas fa-info-circle"></i>
+      <p>Please arrive 10 minutes early. Show your booking reference at the venue.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}TurfTown – Book Sports Venues in Coimbatore | Football, Cricket, Badminton{% endblock %}
+
+{% block content %}
+
+<!-- ── HERO SECTION ── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+
+    <!-- Location Selector -->
+    <div class="location-bar">
+      <span class="location-label">YOUR LOCATION</span>
+      <div class="location-selector">
+        <i class="fas fa-map-marker-alt location-pin"></i>
+        <span class="location-city">Coimbatore</span>
+        <i class="fas fa-chevron-down location-arrow"></i>
+      </div>
+    </div>
+
+    <!-- Hero Headline -->
+    <div class="hero-text">
+      <h1 class="hero-title">
+        Coimbatore's <span class="hero-highlight">Biggest</span><br>
+        Turf Booking Platform
+      </h1>
+      <p class="hero-sub">Book football, cricket & badminton venues instantly.<br>{{ total_turfs }}+ venues across Coimbatore.</p>
+    </div>
+
+    <!-- Search Bar -->
+    <form class="hero-search" action="{{ url_for('main.venues') }}" method="GET">
+      <div class="search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" name="search" class="search-input" placeholder="Search for venues, areas..." autocomplete="off"/>
+        <button type="submit" class="search-btn">Search</button>
+      </div>
+    </form>
+
+    <!-- Sport Category Cards -->
+    <div class="sport-cards-row">
+      <a href="{{ url_for('main.venues', sport='football') }}" class="sport-card sport-card-football">
+        <div class="sport-card-content">
+          <span class="sport-name football-text">Football</span>
+          <img src="{{ url_for('static', filename='images/football_player.png') }}" alt="Football" class="sport-img" onerror="this.style.display='none'"/>
+        </div>
+      </a>
+      <a href="{{ url_for('main.venues', sport='badminton') }}" class="sport-card sport-card-badminton">
+        <div class="sport-card-content">
+          <span class="sport-name badminton-text">Badminton</span>
+          <img src="{{ url_for('static', filename='images/badminton_player.png') }}" alt="Badminton" class="sport-img" onerror="this.style.display='none'"/>
+        </div>
+      </a>
+      <a href="{{ url_for('main.venues', sport='cricket') }}" class="sport-card sport-card-cricket active-sport-card">
+        <div class="sport-card-content">
+          <span class="sport-name cricket-text">Cricket</span>
+          <img src="{{ url_for('static', filename='images/cricket_player.png') }}" alt="Cricket" class="sport-img" onerror="this.style.display='none'"/>
+        </div>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── STATS BAR ── -->
+<section class="stats-bar">
+  <div class="stats-container">
+    <div class="stat-item">
+      <i class="fas fa-map-marker-alt stat-icon"></i>
+      <div class="stat-info">
+        <span class="stat-num">{{ total_turfs }}+</span>
+        <span class="stat-label">Venues</span>
+      </div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <i class="fas fa-futbol stat-icon"></i>
+      <div class="stat-info">
+        <span class="stat-num">3</span>
+        <span class="stat-label">Sports</span>
+      </div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <i class="fas fa-clock stat-icon"></i>
+      <div class="stat-info">
+        <span class="stat-num">6AM–11PM</span>
+        <span class="stat-label">Open Daily</span>
+      </div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <i class="fas fa-star stat-icon"></i>
+      <div class="stat-info">
+        <span class="stat-num">4.8★</span>
+        <span class="stat-label">Avg Rating</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTBALL SECTION ── -->
+<section class="venue-section">
+  <div class="section-container">
+    <div class="section-header">
+      <div class="section-title-row">
+        <div class="section-sport-icon football-icon">
+          <i class="fas fa-futbol"></i>
+        </div>
+        <div>
+          <h2 class="section-title">Football Turfs in Coimbatore</h2>
+          <p class="section-sub">{{ featured_football|length }}+ premium football grounds</p>
+        </div>
+      </div>
+      <a href="{{ url_for('main.venues', sport='football') }}" class="view-all-btn">
+        View All <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+    <div class="turf-grid">
+      {% for turf in featured_football %}
+      <a href="{{ url_for('main.turf_detail', turf_id=turf.id) }}" class="turf-card">
+        <div class="turf-card-img football-card-bg">
+          <div class="turf-sport-badge football-badge">
+            <i class="fas fa-futbol"></i> Football
+          </div>
+          <div class="turf-card-overlay">
+            <span class="book-now-tag">Book Now</span>
+          </div>
+          <div class="turf-price-tag">₹{{ turf.price_per_hour|int }}/hr</div>
+        </div>
+        <div class="turf-card-body">
+          <h3 class="turf-card-name">{{ turf.name }}</h3>
+          <p class="turf-card-location"><i class="fas fa-map-marker-alt"></i> {{ turf.area }}, Coimbatore</p>
+          <div class="turf-card-footer">
+            <div class="turf-rating">
+              <span class="rating-badge">★ {{ turf.rating }}</span>
+              <span class="review-count">({{ turf.total_reviews }} reviews)</span>
+            </div>
+            <div class="turf-amenity-icons">
+              {% if 'Floodlights' in (turf.amenities or '') %}<i class="fas fa-lightbulb" title="Floodlights"></i>{% endif %}
+              {% if 'Parking' in (turf.amenities or '') %}<i class="fas fa-parking" title="Parking"></i>{% endif %}
+              {% if 'Cafeteria' in (turf.amenities or '') %}<i class="fas fa-coffee" title="Cafeteria"></i>{% endif %}
+            </div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── PROMO BANNER ── -->
+<section class="promo-banner">
+  <div class="promo-container">
+    <div class="promo-content">
+      <div class="promo-badge">🎉 Special Offer</div>
+      <h2 class="promo-title">Book Early, Save Big!</h2>
+      <p class="promo-text">Book slots before 9AM and get flat 15% off on weekday bookings.</p>
+      <a href="{{ url_for('main.venues') }}" class="promo-btn">Explore Venues</a>
+    </div>
+    <div class="promo-art">
+      <div class="promo-circle c1"></div>
+      <div class="promo-circle c2"></div>
+      <div class="promo-circle c3"></div>
+      <i class="fas fa-trophy promo-trophy"></i>
+    </div>
+  </div>
+</section>
+
+<!-- ── CRICKET SECTION ── -->
+<section class="venue-section dark-section">
+  <div class="section-container">
+    <div class="section-header">
+      <div class="section-title-row">
+        <div class="section-sport-icon cricket-icon">
+          <i class="fas fa-baseball-ball"></i>
+        </div>
+        <div>
+          <h2 class="section-title">Cricket Grounds in Coimbatore</h2>
+          <p class="section-sub">{{ featured_cricket|length }}+ box cricket and full grounds</p>
+        </div>
+      </div>
+      <a href="{{ url_for('main.venues', sport='cricket') }}" class="view-all-btn">
+        View All <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+    <div class="turf-grid">
+      {% for turf in featured_cricket %}
+      <a href="{{ url_for('main.turf_detail', turf_id=turf.id) }}" class="turf-card">
+        <div class="turf-card-img cricket-card-bg">
+          <div class="turf-sport-badge cricket-badge">
+            <i class="fas fa-baseball-ball"></i> Cricket
+          </div>
+          <div class="turf-card-overlay">
+            <span class="book-now-tag">Book Now</span>
+          </div>
+          <div class="turf-price-tag">₹{{ turf.price_per_hour|int }}/hr</div>
+        </div>
+        <div class="turf-card-body">
+          <h3 class="turf-card-name">{{ turf.name }}</h3>
+          <p class="turf-card-location"><i class="fas fa-map-marker-alt"></i> {{ turf.area }}, Coimbatore</p>
+          <div class="turf-card-footer">
+            <div class="turf-rating">
+              <span class="rating-badge">★ {{ turf.rating }}</span>
+              <span class="review-count">({{ turf.total_reviews }} reviews)</span>
+            </div>
+            <div class="turf-amenity-icons">
+              {% if 'Floodlights' in (turf.amenities or '') %}<i class="fas fa-lightbulb" title="Floodlights"></i>{% endif %}
+              {% if 'Parking' in (turf.amenities or '') %}<i class="fas fa-parking" title="Parking"></i>{% endif %}
+              {% if 'Cafeteria' in (turf.amenities or '') %}<i class="fas fa-coffee" title="Cafeteria"></i>{% endif %}
+            </div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── BADMINTON SECTION ── -->
+<section class="venue-section">
+  <div class="section-container">
+    <div class="section-header">
+      <div class="section-title-row">
+        <div class="section-sport-icon badminton-icon">
+          <i class="fas fa-table-tennis-paddle-ball"></i>
+        </div>
+        <div>
+          <h2 class="section-title">Badminton Courts in Coimbatore</h2>
+          <p class="section-sub">{{ featured_badminton|length }}+ indoor & outdoor courts</p>
+        </div>
+      </div>
+      <a href="{{ url_for('main.venues', sport='badminton') }}" class="view-all-btn">
+        View All <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+    <div class="turf-grid">
+      {% for turf in featured_badminton %}
+      <a href="{{ url_for('main.turf_detail', turf_id=turf.id) }}" class="turf-card">
+        <div class="turf-card-img badminton-card-bg">
+          <div class="turf-sport-badge badminton-badge">
+            <i class="fas fa-table-tennis-paddle-ball"></i> Badminton
+          </div>
+          <div class="turf-card-overlay">
+            <span class="book-now-tag">Book Now</span>
+          </div>
+          <div class="turf-price-tag">₹{{ turf.price_per_hour|int }}/hr</div>
+        </div>
+        <div class="turf-card-body">
+          <h3 class="turf-card-name">{{ turf.name }}</h3>
+          <p class="turf-card-location"><i class="fas fa-map-marker-alt"></i> {{ turf.area }}, Coimbatore</p>
+          <div class="turf-card-footer">
+            <div class="turf-rating">
+              <span class="rating-badge">★ {{ turf.rating }}</span>
+              <span class="review-count">({{ turf.total_reviews }} reviews)</span>
+            </div>
+            <div class="turf-amenity-icons">
+              {% if 'Floodlights' in (turf.amenities or '') %}<i class="fas fa-lightbulb" title="Floodlights"></i>{% endif %}
+              {% if 'Parking' in (turf.amenities or '') %}<i class="fas fa-parking" title="Parking"></i>{% endif %}
+              {% if 'Cafeteria' in (turf.amenities or '') %}<i class="fas fa-coffee" title="Cafeteria"></i>{% endif %}
+            </div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY TURFTOWN ── -->
+<section class="why-section">
+  <div class="section-container">
+    <h2 class="why-title">Why Choose TurfTown?</h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon"><i class="fas fa-bolt"></i></div>
+        <h3>Instant Booking</h3>
+        <p>Book your slot in under 60 seconds. No phone calls, no waiting.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+        <h3>Verified Venues</h3>
+        <p>All {{ total_turfs }}+ venues are personally verified for quality and safety.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <h3>Near You</h3>
+        <p>Venues across every major area in Coimbatore, always close to you.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><i class="fas fa-undo"></i></div>
+        <h3>Easy Cancellation</h3>
+        <p>Flexible cancellation policy. Cancel anytime before your slot.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

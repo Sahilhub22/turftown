@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Manage Bookings – Admin | TurfTown{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+  <div class="admin-sidebar">
+    <div class="admin-sidebar-header"><i class="fas fa-tachometer-alt"></i> Admin Panel</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin_bp.dashboard') }}" class="admin-nav-link"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="{{ url_for('admin_bp.manage_turfs') }}" class="admin-nav-link"><i class="fas fa-map-marker-alt"></i> Manage Turfs</a>
+      <a href="{{ url_for('admin_bp.add_turf') }}" class="admin-nav-link"><i class="fas fa-plus-circle"></i> Add Turf</a>
+      <a href="{{ url_for('admin_bp.manage_bookings') }}" class="admin-nav-link active"><i class="fas fa-calendar-check"></i> Bookings</a>
+      <hr class="admin-nav-divider"/>
+      <a href="{{ url_for('main.home') }}" class="admin-nav-link"><i class="fas fa-external-link-alt"></i> View Site</a>
+    </nav>
+  </div>
+  <div class="admin-content">
+    <div class="admin-content-header">
+      <h1>All Bookings</h1>
+    </div>
+    <!-- Status Filter -->
+    <div class="admin-filter-tabs">
+      <a href="{{ url_for('admin_bp.manage_bookings') }}" class="admin-tab {% if not status_filter %}active{% endif %}">All</a>
+      <a href="{{ url_for('admin_bp.manage_bookings', status='confirmed') }}" class="admin-tab {% if status_filter=='confirmed' %}active{% endif %}">Confirmed</a>
+      <a href="{{ url_for('admin_bp.manage_bookings', status='cancelled') }}" class="admin-tab {% if status_filter=='cancelled' %}active{% endif %}">Cancelled</a>
+      <a href="{{ url_for('admin_bp.manage_bookings', status='completed') }}" class="admin-tab {% if status_filter=='completed' %}active{% endif %}">Completed</a>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Ref</th>
+            <th>Venue</th>
+            <th>Sport</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bookings %}
+          <tr>
+            <td><code>{{ b.booking_ref }}</code></td>
+            <td>{{ b.turf.name[:20] }}{% if b.turf.name|length > 20 %}…{% endif %}</td>
+            <td><span class="sport-chip sport-chip-{{ b.turf.sport_type }}">{{ b.turf.sport_type|capitalize }}</span></td>
+            <td>{{ b.user.name }}</td>
+            <td>{{ b.slot.date }}</td>
+            <td>{{ b.slot.start_time }}–{{ b.slot.end_time }}</td>
+            <td>₹{{ b.total_price|int }}</td>
+            <td><span class="admin-status admin-status-{{ b.status }}">{{ b.status|capitalize }}</span></td>
+            <td>
+              <form method="POST" action="{{ url_for('admin_bp.update_booking_status', booking_id=b.id) }}" style="display:flex;gap:4px">
+                <select name="status" class="admin-status-select">
+                  <option value="confirmed" {% if b.status=='confirmed' %}selected{% endif %}>Confirmed</option>
+                  <option value="completed" {% if b.status=='completed' %}selected{% endif %}>Completed</option>
+                  <option value="cancelled" {% if b.status=='cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+                <button type="submit" class="admin-action-btn btn-update"><i class="fas fa-save"></i></button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="9" class="no-data">No bookings found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

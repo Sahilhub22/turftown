@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}My Bookings – TurfTown{% endblock %}
+
+{% block content %}
+<div class="my-bookings-page">
+  <div class="my-bookings-container">
+    <div class="my-bookings-header">
+      <h1><i class="fas fa-calendar-check"></i> My Bookings</h1>
+      <a href="{{ url_for('main.venues') }}" class="btn-primary btn-sm">
+        <i class="fas fa-plus"></i> Book New Slot
+      </a>
+    </div>
+
+    {% if bookings %}
+    <div class="bookings-list">
+      {% for b in bookings %}
+      <div class="booking-item">
+        <div class="booking-item-sport
+          {% if b.turf.sport_type == 'football' %}football-card-bg
+          {% elif b.turf.sport_type == 'cricket' %}cricket-card-bg
+          {% else %}badminton-card-bg{% endif %}">
+          {% if b.turf.sport_type == 'football' %}<i class="fas fa-futbol booking-sport-icon"></i>
+          {% elif b.turf.sport_type == 'cricket' %}<i class="fas fa-baseball-ball booking-sport-icon"></i>
+          {% else %}<i class="fas fa-table-tennis-paddle-ball booking-sport-icon"></i>{% endif %}
+        </div>
+        <div class="booking-item-info">
+          <div class="booking-item-row1">
+            <h3 class="booking-turf-name">{{ b.turf.name }}</h3>
+            <span class="booking-status booking-status-{{ b.status }}">
+              {% if b.status == 'confirmed' %}<i class="fas fa-check-circle"></i>
+              {% elif b.status == 'cancelled' %}<i class="fas fa-times-circle"></i>
+              {% else %}<i class="fas fa-flag-checkered"></i>{% endif %}
+              {{ b.status|capitalize }}
+            </span>
+          </div>
+          <p class="booking-location"><i class="fas fa-map-marker-alt"></i> {{ b.turf.location }}</p>
+          <div class="booking-meta-row">
+            <span class="booking-meta"><i class="fas fa-calendar"></i> {{ b.slot.date }}</span>
+            <span class="booking-meta"><i class="fas fa-clock"></i> {{ b.slot.start_time }} – {{ b.slot.end_time }}</span>
+            <span class="booking-meta"><i class="fas fa-tag"></i> {{ b.turf.sport_type|capitalize }}</span>
+            <span class="booking-meta"><i class="fas fa-rupee-sign"></i> ₹{{ b.total_price|int }}</span>
+          </div>
+          <div class="booking-ref-row">
+            <span class="booking-ref-label">Ref: <strong>{{ b.booking_ref }}</strong></span>
+            <span class="booking-date-label">Booked on {{ b.booking_date.strftime('%d %b %Y, %I:%M %p') }}</span>
+          </div>
+        </div>
+        <div class="booking-item-actions">
+          {% if b.status == 'confirmed' %}
+          <form method="POST" action="{{ url_for('booking.cancel_booking', booking_id=b.id) }}"
+                onsubmit="return confirm('Cancel this booking?')">
+            <button type="submit" class="btn-cancel-booking">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="no-bookings">
+      <i class="fas fa-calendar-times no-bookings-icon"></i>
+      <h3>No bookings yet!</h3>
+      <p>You haven't booked any slots yet. Start exploring venues.</p>
+      <a href="{{ url_for('main.venues') }}" class="btn-primary">Explore Venues</a>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

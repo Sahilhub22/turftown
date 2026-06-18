@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if sport %}{{ sport|capitalize }} Venues{% else %}All Venues{% endif %} in Coimbatore – TurfTown
+{% endblock %}
+
+{% block content %}
+<div class="venues-page">
+
+  <!-- Page Header -->
+  <div class="venues-header">
+    <div class="venues-header-inner">
+      <div class="breadcrumb">
+        <a href="{{ url_for('main.home') }}">Home</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>{% if sport %}{{ sport|capitalize }}{% else %}All Venues{% endif %}</span>
+      </div>
+      <h1 class="venues-title">
+        {% if sport == 'football' %}<i class="fas fa-futbol"></i>
+        {% elif sport == 'cricket' %}<i class="fas fa-baseball-ball"></i>
+        {% elif sport == 'badminton' %}<i class="fas fa-table-tennis-paddle-ball"></i>
+        {% else %}<i class="fas fa-map-marker-alt"></i>{% endif %}
+        <span id="venues-count">{{ total }}</span>
+        {% if sport %}{{ sport|capitalize }}{% else %}Sports{% endif %}
+        Venues In Coimbatore
+      </h1>
+      <!-- Filter tabs -->
+      <div class="filter-tabs">
+        <a href="{{ url_for('main.venues') }}" class="filter-tab {% if not sport %}active{% endif %}">All</a>
+        <a href="{{ url_for('main.venues', sport='football') }}" class="filter-tab football-tab {% if sport=='football' %}active{% endif %}">
+          <i class="fas fa-futbol"></i> Football ({{ football_count }})
+        </a>
+        <a href="{{ url_for('main.venues', sport='cricket') }}" class="filter-tab cricket-tab {% if sport=='cricket' %}active{% endif %}">
+          <i class="fas fa-baseball-ball"></i> Cricket ({{ cricket_count }})
+        </a>
+        <a href="{{ url_for('main.venues', sport='badminton') }}" class="filter-tab badminton-tab {% if sport=='badminton' %}active{% endif %}">
+          <i class="fas fa-table-tennis-paddle-ball"></i> Badminton ({{ badminton_count }})
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="venues-body">
+
+    <!-- Sidebar Filters -->
+    <aside class="filter-sidebar">
+      <div class="filter-panel">
+        <div class="filter-panel-header">
+          <h3><i class="fas fa-sliders-h"></i> Filters</h3>
+          <a href="{{ url_for('main.venues') }}" class="clear-filters">Clear All</a>
+        </div>
+        <form method="GET" action="{{ url_for('main.venues') }}" id="filterForm">
+          {% if sport %}
+          <input type="hidden" name="sport" value="{{ sport }}"/>
+          {% endif %}
+
+          <!-- Search -->
+          <div class="filter-group">
+            <label class="filter-label">Search</label>
+            <div class="filter-search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" name="search" value="{{ search }}" placeholder="Venue or area..." class="filter-input"/>
+            </div>
+          </div>
+
+          <!-- Area -->
+          <div class="filter-group">
+            <label class="filter-label">Area</label>
+            <select name="area" class="filter-select" onchange="this.form.submit()">
+              <option value="">All Areas</option>
+              {% for a in areas %}
+              <option value="{{ a }}" {% if area == a %}selected{% endif %}>{{ a }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Price Range -->
+          <div class="filter-group">
+            <label class="filter-label">Max Price (₹/hr)</label>
+            <div class="price-options">
+              {% for p in [500, 750, 1000, 1500] %}
+              <label class="price-option {% if price_max|default(0,true)|int == p %}checked{% endif %}">
+                <input type="radio" name="price_max" value="{{ p }}"
+                  {% if request.args.get('price_max','') == p|string %}checked{% endif %}
+                  onchange="this.form.submit()"/>
+                Under ₹{{ p }}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Sort -->
+          <div class="filter-group">
+            <label class="filter-label">Sort By</label>
+            <select name="sort" class="filter-select" onchange="this.form.submit()">
+              <option value="rating" {% if sort=='rating' %}selected{% endif %}>Top Rated</option>
+              <option value="price_asc" {% if sort=='price_asc' %}selected{% endif %}>Price: Low to High</option>
+              <option value="price_desc" {% if sort=='price_desc' %}selected{% endif %}>Price: High to Low</option>
+            </select>
+          </div>
+
+          <button type="submit" class="filter-apply-btn">Apply Filters</button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Turf Grid -->
+    <div class="venues-content">
+      {% if turfs %}
+      <div class="venues-grid">
+        {% for turf in turfs %}
+        <a href="{{ url_for('main.turf_detail', turf_id=turf.id) }}" class="turf-card">
+          <div class="turf-card-img
+            {% if turf.sport_type == 'football' %}football-card-bg
+            {% elif turf.sport_type == 'cricket' %}cricket-card-bg
+            {% else %}badminton-card-bg{% endif %}">
+            <div class="turf-sport-badge
+              {% if turf.sport_type == 'football' %}football-badge
+              {% elif turf.sport_type == 'cricket' %}cricket-badge
+              {% else %}badminton-badge{% endif %}">
+              {% if turf.sport_type == 'football' %}<i class="fas fa-futbol"></i>
+              {% elif turf.sport_type == 'cricket' %}<i class="fas fa-baseball-ball"></i>
+              {% else %}<i class="fas fa-table-tennis-paddle-ball"></i>{% endif %}
+              {{ turf.sport_type|capitalize }}
+            </div>
+            <div class="turf-card-overlay">
+              <span class="book-now-tag">Book Now</span>
+            </div>
+            <div class="turf-price-tag">₹{{ turf.price_per_hour|int }}/hr</div>
+          </div>
+          <div class="turf-card-body">
+            <h3 class="turf-card-name">{{ turf.name }}</h3>
+            <p class="turf-card-location"><i class="fas fa-map-marker-alt"></i> {{ turf.area }}, Coimbatore</p>
+            <div class="turf-card-footer">
+              <div class="turf-rating">
+                <span class="rating-badge">★ {{ turf.rating }}</span>
+                <span class="review-count">({{ turf.total_reviews }})</span>
+              </div>
+              <div class="turf-amenity-icons">
+                {% if 'Floodlights' in (turf.amenities or '') %}<i class="fas fa-lightbulb" title="Floodlights"></i>{% endif %}
+                {% if 'Parking' in (turf.amenities or '') %}<i class="fas fa-parking" title="Parking"></i>{% endif %}
+                {% if 'Cafeteria' in (turf.amenities or '') %}<i class="fas fa-coffee" title="Cafeteria"></i>{% endif %}
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="no-results">
+        <i class="fas fa-search-minus no-results-icon"></i>
+        <h3>No venues found</h3>
+        <p>Try adjusting your filters or search query.</p>
+        <a href="{{ url_for('main.venues') }}" class="btn-primary">View All Venues</a>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard – TurfTown{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+  <div class="admin-sidebar">
+    <div class="admin-sidebar-header">
+      <i class="fas fa-tachometer-alt"></i> Admin Panel
+    </div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin_bp.dashboard') }}" class="admin-nav-link active"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="{{ url_for('admin_bp.manage_turfs') }}" class="admin-nav-link"><i class="fas fa-map-marker-alt"></i> Manage Turfs</a>
+      <a href="{{ url_for('admin_bp.add_turf') }}" class="admin-nav-link"><i class="fas fa-plus-circle"></i> Add Turf</a>
+      <a href="{{ url_for('admin_bp.manage_bookings') }}" class="admin-nav-link"><i class="fas fa-calendar-check"></i> Bookings</a>
+      <hr class="admin-nav-divider"/>
+      <a href="{{ url_for('main.home') }}" class="admin-nav-link"><i class="fas fa-external-link-alt"></i> View Site</a>
+    </nav>
+  </div>
+
+  <div class="admin-content">
+    <div class="admin-content-header">
+      <h1>Dashboard</h1>
+      <p>Welcome back, {{ current_user.name }} 👋</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="admin-stats-grid">
+      <div class="admin-stat-card stat-blue">
+        <div class="admin-stat-icon"><i class="fas fa-calendar-check"></i></div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-num">{{ total_bookings }}</span>
+          <span class="admin-stat-label">Total Bookings</span>
+        </div>
+      </div>
+      <div class="admin-stat-card stat-green">
+        <div class="admin-stat-icon"><i class="fas fa-calendar-day"></i></div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-num">{{ today_bookings }}</span>
+          <span class="admin-stat-label">Today's Bookings</span>
+        </div>
+      </div>
+      <div class="admin-stat-card stat-yellow">
+        <div class="admin-stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-num">{{ total_turfs }}</span>
+          <span class="admin-stat-label">Total Turfs</span>
+        </div>
+      </div>
+      <div class="admin-stat-card stat-purple">
+        <div class="admin-stat-icon"><i class="fas fa-users"></i></div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-num">{{ total_users }}</span>
+          <span class="admin-stat-label">Registered Users</span>
+        </div>
+      </div>
+      <div class="admin-stat-card stat-orange">
+        <div class="admin-stat-icon"><i class="fas fa-rupee-sign"></i></div>
+        <div class="admin-stat-info">
+          <span class="admin-stat-num">₹{{ total_revenue|int }}</span>
+          <span class="admin-stat-label">Total Revenue</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sport Stats -->
+    <div class="admin-sport-stats">
+      <h3>Bookings by Sport</h3>
+      <div class="sport-stat-bars">
+        {% set max_val = [sport_stats.football, sport_stats.cricket, sport_stats.badminton]|max %}
+        {% if max_val == 0 %}{% set max_val = 1 %}{% endif %}
+        <div class="sport-stat-bar-row">
+          <span class="sport-stat-label"><i class="fas fa-futbol"></i> Football</span>
+          <div class="sport-bar-track">
+            <div class="sport-bar football-bar" style="width: {{ (sport_stats.football / max_val * 100)|int }}%"></div>
+          </div>
+          <span class="sport-stat-count">{{ sport_stats.football }}</span>
+        </div>
+        <div class="sport-stat-bar-row">
+          <span class="sport-stat-label"><i class="fas fa-baseball-ball"></i> Cricket</span>
+          <div class="sport-bar-track">
+            <div class="sport-bar cricket-bar" style="width: {{ (sport_stats.cricket / max_val * 100)|int }}%"></div>
+          </div>
+          <span class="sport-stat-count">{{ sport_stats.cricket }}</span>
+        </div>
+        <div class="sport-stat-bar-row">
+          <span class="sport-stat-label"><i class="fas fa-table-tennis-paddle-ball"></i> Badminton</span>
+          <div class="sport-bar-track">
+            <div class="sport-bar badminton-bar" style="width: {{ (sport_stats.badminton / max_val * 100)|int }}%"></div>
+          </div>
+          <span class="sport-stat-count">{{ sport_stats.badminton }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Bookings -->
+    <div class="admin-recent-bookings">
+      <div class="admin-section-header">
+        <h3>Recent Bookings</h3>
+        <a href="{{ url_for('admin_bp.manage_bookings') }}" class="admin-view-all">View All →</a>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Ref</th>
+              <th>Venue</th>
+              <th>User</th>
+              <th>Date</th>
+              <th>Slot</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in recent_bookings %}
+            <tr>
+              <td><code>{{ b.booking_ref }}</code></td>
+              <td>{{ b.turf.name[:25] }}{% if b.turf.name|length > 25 %}…{% endif %}</td>
+              <td>{{ b.user.name }}</td>
+              <td>{{ b.slot.date }}</td>
+              <td>{{ b.slot.start_time }}–{{ b.slot.end_time }}</td>
+              <td>₹{{ b.total_price|int }}</td>
+              <td><span class="admin-status admin-status-{{ b.status }}">{{ b.status|capitalize }}</span></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="no-data">No bookings yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

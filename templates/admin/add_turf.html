@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Add Turf – Admin | TurfTown{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+  <div class="admin-sidebar">
+    <div class="admin-sidebar-header"><i class="fas fa-tachometer-alt"></i> Admin Panel</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin_bp.dashboard') }}" class="admin-nav-link"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="{{ url_for('admin_bp.manage_turfs') }}" class="admin-nav-link"><i class="fas fa-map-marker-alt"></i> Manage Turfs</a>
+      <a href="{{ url_for('admin_bp.add_turf') }}" class="admin-nav-link active"><i class="fas fa-plus-circle"></i> Add Turf</a>
+      <a href="{{ url_for('admin_bp.manage_bookings') }}" class="admin-nav-link"><i class="fas fa-calendar-check"></i> Bookings</a>
+      <hr class="admin-nav-divider"/>
+      <a href="{{ url_for('main.home') }}" class="admin-nav-link"><i class="fas fa-external-link-alt"></i> View Site</a>
+    </nav>
+  </div>
+  <div class="admin-content">
+    <div class="admin-content-header">
+      <h1>Add New Turf</h1>
+      <a href="{{ url_for('admin_bp.manage_turfs') }}" class="btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    <div class="admin-form-card">
+      <form method="POST" action="{{ url_for('admin_bp.add_turf') }}" class="admin-form">
+        <div class="admin-form-grid">
+          <div class="form-group">
+            <label class="form-label">Turf Name *</label>
+            <input type="text" name="name" class="form-input" placeholder="e.g. KG Grass Football Arena" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sport Type *</label>
+            <select name="sport_type" class="form-input" required>
+              <option value="">Select Sport</option>
+              <option value="football">⚽ Football</option>
+              <option value="cricket">🏏 Cricket</option>
+              <option value="badminton">🏸 Badminton</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location (Full Address) *</label>
+            <input type="text" name="location" class="form-input" placeholder="e.g. KG Chavadi, Coimbatore" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Area *</label>
+            <input type="text" name="area" class="form-input" placeholder="e.g. KG Chavadi" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input type="text" name="city" class="form-input" value="Coimbatore"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price per Hour (₹) *</label>
+            <input type="number" name="price_per_hour" class="form-input" placeholder="e.g. 800" min="100" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Opening Time</label>
+            <input type="time" name="open_time" class="form-input" value="06:00"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Closing Time</label>
+            <input type="time" name="close_time" class="form-input" value="23:00"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rating (1-5)</label>
+            <input type="number" name="rating" class="form-input" value="4.0" min="1" max="5" step="0.1"/>
+          </div>
+          <div class="form-group form-group-full">
+            <label class="form-label">Amenities (comma-separated)</label>
+            <input type="text" name="amenities" class="form-input" placeholder="Floodlights,Parking,Changing Room,Water"/>
+          </div>
+          <div class="form-group form-group-full">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-input form-textarea" rows="3" placeholder="Brief description of the turf..."></textarea>
+          </div>
+        </div>
+        <div class="admin-form-actions">
+          <button type="submit" class="btn-primary">
+            <i class="fas fa-plus-circle"></i> Add Turf
+          </button>
+          <a href="{{ url_for('admin_bp.manage_turfs') }}" class="btn-outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

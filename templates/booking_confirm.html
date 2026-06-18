@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}Confirm Booking – {{ turf.name }} | TurfTown{% endblock %}
+
+{% block content %}
+<div class="booking-confirm-page">
+  <div class="booking-confirm-container">
+
+    <div class="booking-confirm-left">
+      <h1 class="confirm-title"><i class="fas fa-calendar-check"></i> Confirm Your Booking</h1>
+
+      <!-- Turf Summary -->
+      <div class="confirm-turf-card">
+        <div class="confirm-turf-img
+          {% if turf.sport_type == 'football' %}football-card-bg
+          {% elif turf.sport_type == 'cricket' %}cricket-card-bg
+          {% else %}badminton-card-bg{% endif %}">
+          <div class="confirm-sport-badge">
+            {% if turf.sport_type == 'football' %}<i class="fas fa-futbol"></i>
+            {% elif turf.sport_type == 'cricket' %}<i class="fas fa-baseball-ball"></i>
+            {% else %}<i class="fas fa-table-tennis-paddle-ball"></i>{% endif %}
+          </div>
+        </div>
+        <div class="confirm-turf-info">
+          <h2 class="confirm-turf-name">{{ turf.name }}</h2>
+          <p class="confirm-turf-location"><i class="fas fa-map-marker-alt"></i> {{ turf.location }}</p>
+          <div class="confirm-slot-details">
+            <div class="confirm-detail-row">
+              <i class="fas fa-calendar-alt"></i>
+              <span>{{ slot.date }}</span>
+            </div>
+            <div class="confirm-detail-row">
+              <i class="fas fa-clock"></i>
+              <span>{{ slot.start_time }} – {{ slot.end_time }}</span>
+            </div>
+            <div class="confirm-detail-row">
+              <i class="fas fa-tag"></i>
+              <span>{{ turf.sport_type|capitalize }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player Info -->
+      <div class="confirm-player-info">
+        <h3><i class="fas fa-user"></i> Player Details</h3>
+        <div class="player-info-grid">
+          <div class="player-info-item">
+            <label>Name</label>
+            <span>{{ current_user.name }}</span>
+          </div>
+          <div class="player-info-item">
+            <label>Email</label>
+            <span>{{ current_user.email }}</span>
+          </div>
+          <div class="player-info-item">
+            <label>Phone</label>
+            <span>{{ current_user.phone }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Summary -->
+    <div class="booking-confirm-right">
+      <div class="price-summary-card">
+        <h3 class="price-summary-title">Price Summary</h3>
+        <div class="price-row">
+          <span>Slot (1 hour)</span>
+          <span>₹{{ slot.price|int }}</span>
+        </div>
+        <div class="price-row">
+          <span>Platform Fee</span>
+          <span class="free-label">FREE</span>
+        </div>
+        <div class="price-row">
+          <span>Taxes</span>
+          <span>Included</span>
+        </div>
+        <div class="price-divider"></div>
+        <div class="price-row total-row">
+          <span>Total</span>
+          <span class="total-amount">₹{{ slot.price|int }}</span>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="payment-method-section">
+          <h4>Payment Method</h4>
+          <form method="POST" action="{{ url_for('booking.book_slot', slot_id=slot.id) }}" id="confirmBookingForm">
+            <div class="payment-options">
+              <label class="payment-option selected-payment" id="payVenueOpt">
+                <input type="radio" name="payment_method" value="Pay at Venue" checked/>
+                <div class="payment-opt-inner">
+                  <i class="fas fa-money-bill-wave"></i>
+                  <div>
+                    <span class="pay-opt-label">Pay at Venue</span>
+                    <span class="pay-opt-sub">Cash or UPI at venue</span>
+                  </div>
+                </div>
+              </label>
+              <label class="payment-option" id="payOnlineOpt">
+                <input type="radio" name="payment_method" value="Online Payment"/>
+                <div class="payment-opt-inner">
+                  <i class="fas fa-credit-card"></i>
+                  <div>
+                    <span class="pay-opt-label">Online Payment</span>
+                    <span class="pay-opt-sub">UPI / Card / Net Banking</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+
+            <button type="submit" class="confirm-book-btn">
+              <i class="fas fa-check-circle"></i> Confirm Booking – ₹{{ slot.price|int }}
+            </button>
+          </form>
+        </div>
+
+        <div class="confirm-terms">
+          <i class="fas fa-shield-alt"></i>
+          <p>By confirming, you agree to our <a href="#">Terms of Service</a>. Free cancellation up to 2 hours before your slot.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.payment-option input').forEach(radio => {
+  radio.addEventListener('change', function() {
+    document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected-payment'));
+    this.closest('.payment-option').classList.add('selected-payment');
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}{{ turf.name }} – Book Slots | TurfTown{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+
+  <!-- Breadcrumb -->
+  <div class="detail-breadcrumb">
+    <div class="container-inner">
+      <a href="{{ url_for('main.home') }}">Home</a>
+      <i class="fas fa-chevron-right"></i>
+      <a href="{{ url_for('main.venues', sport=turf.sport_type) }}">{{ turf.sport_type|capitalize }}</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>{{ turf.name }}</span>
+    </div>
+  </div>
+
+  <div class="detail-container">
+
+    <!-- Left: Turf Info -->
+    <div class="detail-left">
+      <!-- Turf Hero Image -->
+      <div class="detail-hero
+        {% if turf.sport_type == 'football' %}football-detail-bg
+        {% elif turf.sport_type == 'cricket' %}cricket-detail-bg
+        {% else %}badminton-detail-bg{% endif %}">
+        <div class="detail-hero-overlay">
+          <div class="detail-sport-badge
+            {% if turf.sport_type == 'football' %}football-badge
+            {% elif turf.sport_type == 'cricket' %}cricket-badge
+            {% else %}badminton-badge{% endif %}">
+            {% if turf.sport_type == 'football' %}<i class="fas fa-futbol"></i>
+            {% elif turf.sport_type == 'cricket' %}<i class="fas fa-baseball-ball"></i>
+            {% else %}<i class="fas fa-table-tennis-paddle-ball"></i>{% endif %}
+            {{ turf.sport_type|capitalize }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Turf Info Card -->
+      <div class="detail-info-card">
+        <div class="detail-name-row">
+          <h1 class="detail-turf-name">{{ turf.name }}</h1>
+          <div class="detail-rating-big">
+            <span class="star-big">★</span>
+            <span class="rating-num-big">{{ turf.rating }}</span>
+            <span class="rating-count-big">({{ turf.total_reviews }} ratings)</span>
+          </div>
+        </div>
+
+        <div class="detail-location-row">
+          <i class="fas fa-map-marker-alt detail-loc-icon"></i>
+          <span>{{ turf.location }}</span>
+        </div>
+
+        <div class="detail-timing">
+          <i class="fas fa-clock"></i>
+          <span>Open: {{ turf.open_time }} – {{ turf.close_time }}</span>
+          <span class="open-status">
+            <span class="open-dot"></span> Open Now
+          </span>
+        </div>
+
+        <div class="detail-price-row">
+          <div class="detail-price">
+            <span class="price-label">Starting from</span>
+            <span class="price-amount">₹{{ turf.price_per_hour|int }}</span>
+            <span class="price-unit">/hour</span>
+          </div>
+        </div>
+
+        <p class="detail-description">{{ turf.description }}</p>
+
+        <!-- Amenities -->
+        {% if amenities_list %}
+        <div class="amenities-section">
+          <h3 class="amenities-title">Amenities</h3>
+          <div class="amenities-grid">
+            {% for a in amenities_list %}
+            <div class="amenity-chip">
+              {% if 'Floodlight' in a %}<i class="fas fa-lightbulb"></i>
+              {% elif 'Parking' in a %}<i class="fas fa-parking"></i>
+              {% elif 'Changing' in a %}<i class="fas fa-tshirt"></i>
+              {% elif 'Water' in a %}<i class="fas fa-tint"></i>
+              {% elif 'Cafeteria' in a %}<i class="fas fa-coffee"></i>
+              {% elif 'First Aid' in a %}<i class="fas fa-first-aid"></i>
+              {% elif 'Wi-Fi' in a %}<i class="fas fa-wifi"></i>
+              {% elif 'Restroom' in a %}<i class="fas fa-restroom"></i>
+              {% elif 'Equipment' in a %}<i class="fas fa-tools"></i>
+              {% else %}<i class="fas fa-check-circle"></i>{% endif %}
+              {{ a.strip() }}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Related Turfs -->
+      {% if related %}
+      <div class="related-section">
+        <h3 class="related-title">Similar {{ turf.sport_type|capitalize }} Venues</h3>
+        <div class="related-grid">
+          {% for r in related %}
+          <a href="{{ url_for('main.turf_detail', turf_id=r.id) }}" class="related-card">
+            <div class="related-card-img
+              {% if r.sport_type == 'football' %}football-card-bg
+              {% elif r.sport_type == 'cricket' %}cricket-card-bg
+              {% else %}badminton-card-bg{% endif %}">
+              <span class="related-price">₹{{ r.price_per_hour|int }}/hr</span>
+            </div>
+            <div class="related-info">
+              <p class="related-name">{{ r.name }}</p>
+              <p class="related-area"><i class="fas fa-map-marker-alt"></i> {{ r.area }}</p>
+              <span class="related-rating">★ {{ r.rating }}</span>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Right: Slot Booking Panel -->
+    <div class="booking-panel">
+      <div class="booking-panel-inner">
+        <div class="booking-panel-header">
+          <h2>Book a Slot</h2>
+          <span class="booking-panel-price">₹{{ turf.price_per_hour|int }}/hr</span>
+        </div>
+
+        <!-- Date Selector -->
+        <div class="date-selector">
+          <h4 class="slot-section-label"><i class="fas fa-calendar-alt"></i> Select Date</h4>
+          <div class="date-tabs">
+            {% for d in dates %}
+            <a href="{{ url_for('main.turf_detail', turf_id=turf.id, date=d.date) }}"
+               class="date-tab {% if selected_date == d.date %}active-date{% endif %}">
+              {{ d.label }}
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Slot Grid -->
+        <div class="slot-section">
+          <h4 class="slot-section-label">
+            <i class="fas fa-clock"></i> Available Slots
+            <span class="slot-legend">
+              <span class="legend-dot avail-dot"></span>Available
+              <span class="legend-dot booked-dot"></span>Booked
+            </span>
+          </h4>
+          <div class="slot-grid">
+            {% for slot in slots %}
+            <div class="slot-item {% if slot.is_booked %}slot-booked{% else %}slot-available{% endif %}"
+                 {% if not slot.is_booked %}
+                 onclick="selectSlot({{ slot.id }}, '{{ slot.start_time }}', '{{ slot.end_time }}', {{ slot.price|int }})"
+                 {% endif %}>
+              <span class="slot-time">{{ slot.start_time }} – {{ slot.end_time }}</span>
+              <span class="slot-status-label">{% if slot.is_booked %}Booked{% else %}₹{{ slot.price|int }}{% endif %}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Selected slot summary -->
+        <div class="selected-slot-summary" id="selectedSlotSummary" style="display:none;">
+          <div class="selected-slot-info">
+            <i class="fas fa-check-circle selected-check"></i>
+            <div>
+              <p class="selected-label">Selected Slot</p>
+              <p class="selected-time" id="selectedSlotTime"></p>
+            </div>
+            <div class="selected-price" id="selectedSlotPrice"></div>
+          </div>
+        </div>
+
+        <!-- Book Button -->
+        <div class="booking-action">
+          <button class="book-slot-btn" id="bookSlotBtn" disabled onclick="proceedToBook()">
+            <i class="fas fa-calendar-check"></i> Confirm Booking
+          </button>
+          <p class="booking-note"><i class="fas fa-shield-alt"></i> Instant confirmation • Pay at venue</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Hidden form for booking submission -->
+<form id="bookingForm" method="GET" action="">
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedSlotId = null;
+
+function selectSlot(slotId, startTime, endTime, price) {
+  // Remove previous selection
+  document.querySelectorAll('.slot-item.slot-selected').forEach(el => el.classList.remove('slot-selected'));
+
+  // Highlight selected
+  event.currentTarget.classList.add('slot-selected');
+  selectedSlotId = slotId;
+
+  // Show summary
+  document.getElementById('selectedSlotSummary').style.display = 'block';
+  document.getElementById('selectedSlotTime').textContent = startTime + ' – ' + endTime;
+  document.getElementById('selectedSlotPrice').textContent = '₹' + price;
+
+  // Enable book button
+  document.getElementById('bookSlotBtn').disabled = false;
+}
+
+function proceedToBook() {
+  if (selectedSlotId) {
+    window.location.href = '/book/' + selectedSlotId;
+  }
+}
+</script>
+{% endblock %}

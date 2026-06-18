@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Manage Turfs – Admin | TurfTown{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+  <div class="admin-sidebar">
+    <div class="admin-sidebar-header"><i class="fas fa-tachometer-alt"></i> Admin Panel</div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admin_bp.dashboard') }}" class="admin-nav-link"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="{{ url_for('admin_bp.manage_turfs') }}" class="admin-nav-link active"><i class="fas fa-map-marker-alt"></i> Manage Turfs</a>
+      <a href="{{ url_for('admin_bp.add_turf') }}" class="admin-nav-link"><i class="fas fa-plus-circle"></i> Add Turf</a>
+      <a href="{{ url_for('admin_bp.manage_bookings') }}" class="admin-nav-link"><i class="fas fa-calendar-check"></i> Bookings</a>
+      <hr class="admin-nav-divider"/>
+      <a href="{{ url_for('main.home') }}" class="admin-nav-link"><i class="fas fa-external-link-alt"></i> View Site</a>
+    </nav>
+  </div>
+  <div class="admin-content">
+    <div class="admin-content-header">
+      <h1>Manage Turfs</h1>
+      <a href="{{ url_for('admin_bp.add_turf') }}" class="btn-primary btn-sm"><i class="fas fa-plus"></i> Add New Turf</a>
+    </div>
+
+    <!-- Sport Filter Tabs -->
+    <div class="admin-filter-tabs">
+      <a href="{{ url_for('admin_bp.manage_turfs') }}" class="admin-tab {% if not sport %}active{% endif %}">All Turfs ({{ turfs|length }})</a>
+      <a href="{{ url_for('admin_bp.manage_turfs', sport='football') }}" class="admin-tab {% if sport=='football' %}active{% endif %}">⚽ Football</a>
+      <a href="{{ url_for('admin_bp.manage_turfs', sport='cricket') }}" class="admin-tab {% if sport=='cricket' %}active{% endif %}">🏏 Cricket</a>
+      <a href="{{ url_for('admin_bp.manage_turfs', sport='badminton') }}" class="admin-tab {% if sport=='badminton' %}active{% endif %}">🏸 Badminton</a>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Sport</th>
+            <th>Area</th>
+            <th>Price/hr</th>
+            <th>Rating</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for turf in turfs %}
+          <tr class="{% if not turf.is_active %}row-inactive{% endif %}">
+            <td>{{ turf.id }}</td>
+            <td>
+              <a href="{{ url_for('main.turf_detail', turf_id=turf.id) }}" target="_blank" class="admin-turf-link">
+                {{ turf.name }}
+              </a>
+            </td>
+            <td>
+              <span class="sport-chip sport-chip-{{ turf.sport_type }}">
+                {% if turf.sport_type == 'football' %}⚽{% elif turf.sport_type == 'cricket' %}🏏{% else %}🏸{% endif %}
+                {{ turf.sport_type|capitalize }}
+              </span>
+            </td>
+            <td>{{ turf.area }}</td>
+            <td>₹{{ turf.price_per_hour|int }}</td>
+            <td>★ {{ turf.rating }}</td>
+            <td>
+              <span class="admin-status {% if turf.is_active %}admin-status-confirmed{% else %}admin-status-cancelled{% endif %}">
+                {% if turf.is_active %}Active{% else %}Inactive{% endif %}
+              </span>
+            </td>
+            <td>
+              <form method="POST" action="{{ url_for('admin_bp.toggle_turf', turf_id=turf.id) }}" style="display:inline">
+                <button type="submit" class="admin-action-btn {% if turf.is_active %}btn-deactivate{% else %}btn-activate{% endif %}">
+                  {% if turf.is_active %}<i class="fas fa-pause"></i>{% else %}<i class="fas fa-play"></i>{% endif %}
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8" class="no-data">No turfs found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
